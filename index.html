@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RBS School Hub — Setup</title>
   <style>
     body {
@@ -12,54 +12,58 @@
       padding: 20px;
     }
     .container {
-      max-width: 500px;
-      margin: auto;
+      max-width: 600px;
+      margin: 30px auto;
       background: #fff;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
     }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
+    h2 { text-align: center; margin-bottom: 10px; }
+    p.sub { text-align:center; color:#555; margin-bottom:18px; }
     button {
       width: 100%;
-      padding: 15px;
-      margin-top: 15px;
+      padding: 14px;
+      margin-top: 12px;
       border: none;
       border-radius: 10px;
       background: #007bff;
       color: white;
       font-size: 16px;
       cursor: pointer;
-      transition: 0.2s;
+      transition: .18s;
     }
-    button:hover { background: #0051c9; }
-    .success {
-      margin-top: 15px;
-      color: green;
-      text-align: center;
-      font-weight: bold;
+    button.secondary {
+      background: #28a745;
     }
+    button:active { transform: translateY(1px); }
+    #msg {
+      margin-top: 16px;
+      padding: 10px;
+      border-radius: 8px;
+      display:none;
+    }
+    #msg.success { background:#e6ffed; color:#007a3d; display:block; }
+    #msg.error { background:#ffe6e6; color:#b30000; display:block; }
   </style>
 </head>
 <body>
-
   <div class="container">
-    <h2>RBS School Hub - Generator</h2>
+    <h2>RBS School Hub — Generator</h2>
+    <p class="sub">Klik tombol untuk membuat collection default di Firestore. Hati-hati: butuh akses ke project Firebase yang sesuai.</p>
 
-    <button onclick="generateWebCollections()">Generate WEB Collections</button>
-    <button onclick="generateGhibahCollections()">Generate GHIBAH Chat Collections</button>
+    <button id="btn-generate-web">Generate WEB Collections</button>
+    <button id="btn-generate-ghibah" class="secondary">Generate GHIBAH Chat Collections</button>
 
-    <div id="msg" class="success"></div>
+    <div id="msg"></div>
   </div>
 
-  <!-- Firebase -->
+  <!-- Firebase (ESM) + module logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+    // ---------- CONFIG ----------
     const firebaseConfig = {
       apiKey: "AIzaSyAsaVfy4SOegY1HxUZTJoR2HETUenU8CUo",
       authDomain: "rbs-schoolhub.firebaseapp.com",
@@ -73,48 +77,96 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // ---------- UI helpers ----------
+    const msgEl = document.getElementById('msg');
+    function showSuccess(text) {
+      msgEl.className = 'success';
+      msgEl.textContent = text;
+      msgEl.style.display = 'block';
+    }
+    function showError(text) {
+      msgEl.className = 'error';
+      msgEl.textContent = text;
+      msgEl.style.display = 'block';
+    }
+
+    // ---------- Generator functions ----------
     async function generateWebCollections() {
-      await setDoc(doc(db, "config", "homepage"), {
-        schoolName: "RBS School Hub",
-        headerImage: "",
-        createdAt: Date.now(),
-        lastUpdate: Date.now()
-      });
+      try {
+        // safety: check if config/homepage already exists to avoid overwrite
+        const confRef = doc(db, "config", "homepage");
+        const confSnap = await getDoc(confRef);
+        if (confSnap.exists()) {
+          showSuccess("WEB Collections sudah ada — operasi dihentikan (tidak overwrite).");
+          return;
+        }
 
-      await setDoc(doc(db, "homepageSections", "upcomingEvents"), {
-        enabled: true,
-        items: []
-      });
+        // create default documents
+        await setDoc(confRef, {
+          schoolName: "RBS School Hub",
+          headerImage: "",
+          createdAt: Date.now(),
+          lastUpdate: Date.now()
+        });
 
-      await setDoc(doc(db, "homepageSections", "extracurricular"), {
-        enabled: true,
-        items: []
-      });
+        await setDoc(doc(db, "homepageSections", "upcomingEvents"), {
+          enabled: true,
+          items: []
+        });
 
-      await setDoc(doc(db, "homepageSections", "trending"), {
-        enabled: true,
-        items: []
-      });
+        await setDoc(doc(db, "homepageSections", "extracurricular"), {
+          enabled: true,
+          items: []
+        });
 
-      await setDoc(doc(db, "homepageSections", "comingSoon"), {
-        enabled: true,
-        items: []
-      });
+        await setDoc(doc(db, "homepageSections", "trending"), {
+          enabled: true,
+          items: []
+        });
 
-      document.getElementById("msg").innerHTML = "WEB Collections berhasil dibuat!";
+        await setDoc(doc(db, "homepageSections", "comingSoon"), {
+          enabled: true,
+          items: []
+        });
+
+        showSuccess("WEB Collections berhasil dibuat!");
+      } catch (err) {
+        console.error(err);
+        showError("Gagal membuat WEB Collections. Cek console untuk detail.");
+      }
     }
 
     async function generateGhibahCollections() {
-      await setDoc(doc(db, "chatRooms", "ghibah"), {
-        name: "Ghibah Group 🔥",
-        passwordEnabled: false,
-        allowAnonymous: true,
-        createdAt: Date.now()
-      });
+      try {
+        const roomRef = doc(db, "chatRooms", "ghibah");
+        const roomSnap = await getDoc(roomRef);
+        if (roomSnap.exists()) {
+          showSuccess("GHIBAH Chat Room sudah ada — operasi dihentikan (tidak overwrite).");
+          return;
+        }
 
-      document.getElementById("msg").innerHTML = "GHIBAH Chat Room berhasil dibuat!";
+        await setDoc(roomRef, {
+          name: "Ghibah Group 🔥",
+          passwordEnabled: false,
+          allowAnonymous: true,
+          createdAt: Date.now()
+        });
+
+        showSuccess("GHIBAH Chat Room berhasil dibuat!");
+      } catch (err) {
+        console.error(err);
+        showError("Gagal membuat GHIBAH Chat Room. Cek console untuk detail.");
+      }
     }
-  </script>
 
+    // ---------- Attach listeners (fix for module scope) ----------
+    document.getElementById('btn-generate-web').addEventListener('click', generateWebCollections);
+    document.getElementById('btn-generate-ghibah').addEventListener('click', generateGhibahCollections);
+
+    // Optional: expose to window if you still want inline calls elsewhere
+    window.generateWebCollections = generateWebCollections;
+    window.generateGhibahCollections = generateGhibahCollections;
+
+  </script>
 </body>
 </html>
