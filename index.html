@@ -9,107 +9,107 @@
     body {
       margin: 0;
       font-family: "Poppins", Arial, sans-serif;
-      background: #eef1f6;
+      background: #f0f3f9;
     }
 
     /* HEADER */
     .header {
       width: 100%;
-      height: 210px;
-      background: linear-gradient(135deg, #0066ff, #00c3ff);
-      background-size: cover;
-      background-position: center;
+      height: 230px;
+      background: linear-gradient(135deg, #0055ff, #00c8ff);
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      padding-bottom: 25px;
-      position: relative;
+      padding-bottom: 28px;
       border-bottom-left-radius: 20px;
       border-bottom-right-radius: 20px;
-      box-shadow: 0 4px 25px rgba(0,0,0,0.15);
+      position: relative;
+      overflow: hidden;
     }
 
     .header::after {
       content: "";
       position: absolute;
       inset: 0;
-      backdrop-filter: brightness(0.65);
-      border-bottom-left-radius: 20px;
-      border-bottom-right-radius: 20px;
+      backdrop-filter: blur(2px) brightness(0.65);
     }
 
     .school-name {
       position: relative;
-      z-index: 5;
-      font-size: 28px;
-      font-weight: 600;
-      padding: 10px 22px;
-      background: rgba(255,255,255,0.25);
+      font-size: 30px;
+      font-weight: 700;
+      padding: 12px 28px;
       color: white;
-      border-radius: 14px;
-      backdrop-filter: blur(6px);
-      box-shadow: 0 0 15px rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.2);
+      border-radius: 18px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(255,255,255,0.35);
     }
 
-    /* TITLE */
+    /* TITLE SECTION */
     h2 {
-      margin: 22px 16px 10px;
-      font-size: 21px;
-      color: #333;
-      font-weight: 600;
+      margin: 28px 20px 12px;
+      font-size: 22px;
+      font-weight: 700;
+      color: #1c1f27;
     }
 
-    /* LIST */
+    /* HORIZONTAL SCROLL LIST */
     .scroll-list {
       display: flex;
-      gap: 14px;
+      gap: 18px;
       overflow-x: auto;
-      padding: 0 16px 22px;
+      padding: 4px 20px 26px;
+      scroll-snap-type: x proximity;
     }
     .scroll-list::-webkit-scrollbar {
       height: 6px;
     }
     .scroll-list::-webkit-scrollbar-thumb {
-      background: #c8cdd9;
-      border-radius: 5px;
+      background: #c7cce0;
+      border-radius: 6px;
     }
 
     /* CARD */
     .card {
-      min-width: 160px;
+      min-width: 165px;
       background: white;
-      border-radius: 14px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+      border-radius: 18px;
       overflow: hidden;
-      cursor: pointer;
-      transition: 0.25s;
+      scroll-snap-align: start;
+      box-shadow: 0 5px 16px rgba(0,0,0,0.1);
+      transition: 0.28s ease;
+      transform: translateY(0);
     }
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.15);
+      transform: translateY(-10px);
+      box-shadow: 0 12px 26px rgba(0,0,0,0.18);
     }
 
     .card img {
       width: 100%;
-      height: 100px;
+      height: 115px;
       object-fit: cover;
+      background: #ddd;
     }
 
-    .card .content {
-      padding: 10px;
-      font-size: 14px;
-      color: #222;
-      font-weight: 500;
-    }
-
-    .card .tag {
+    .tag {
       font-size: 12px;
-      margin: 6px 10px 0;
+      margin: 10px;
+      padding: 4px 10px;
+      background: linear-gradient(135deg,#dce6ff,#b9ccff);
+      color: #2240c9;
+      border-radius: 8px;
       display: inline-block;
-      padding: 4px 8px;
-      background: #e8efff;
-      color: #1b4ddf;
-      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .content {
+      padding: 10px 12px 12px;
+      font-size: 15px;
+      color: #111;
+      font-weight: 600;
+      line-height: 1.35;
     }
   </style>
 </head>
@@ -133,6 +133,7 @@
 <h2>Coming Soon</h2>
 <div id="comingSoon" class="scroll-list"></div>
 
+<!-- FIREBASE -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -150,72 +151,65 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  /* ----------------- RENDER CARD ----------------- */
+  /* RENDER CARD */
   function renderCard(item) {
     const el = document.createElement("div");
     el.className = "card";
 
     el.innerHTML = `
-      ${item.image ? `<img src="${item.image}">` : ""}
+      ${item.image ? `<img src="${item.image}"/>` : `<img src="https://i.imgur.com/Zc7a7W8.png"/>`}
       ${item.tag ? `<div class="tag">${item.tag}</div>` : ""}
-      <div class="content">${item.title}</div>
+      <div class="content">${item.title || "Tanpa Judul"}</div>
     `;
-
-    el.onclick = () => alert("Detail: " + item.title);
 
     return el;
   }
 
-  /* ----------- LOAD SECTION FROM FIREBASE ---------- */
+  /* LOAD SECTION */
   async function loadSection(section, target) {
     const ref = doc(db, "homepageSections", section);
     const snap = await getDoc(ref);
-
     const el = document.getElementById(target);
+
     el.innerHTML = "";
 
     if (!snap.exists()) {
-      // fallback example
-      const dummy = [{
-        title: "Belum ada data",
-        image: "https://i.imgur.com/89dJrSg.png",
-        tag: "Example"
-      }];
-      dummy.forEach(d => el.appendChild(renderCard(d)));
+      el.innerHTML = "<p style='padding:20px;color:#777'>Belum ada data.</p>";
       return;
     }
 
     const data = snap.data();
-    if (!data.items) return;
+    if (!data.items || data.items.length === 0) {
+      el.innerHTML = "<p style='padding:20px;color:#777'>Belum ada data.</p>";
+      return;
+    }
 
     data.items.forEach(item => el.appendChild(renderCard(item)));
   }
 
-  /* ----------- LOAD HEADER / CONFIG ---------- */
+  /* LOAD CONFIG */
   async function loadConfig() {
     const ref = doc(db, "config", "homepage");
     const snap = await getDoc(ref);
 
-    if (!snap.exists()) {
-      document.getElementById("schoolName").textContent = "RBS School Hub";
-      return;
-    }
+    if (!snap.exists()) return;
 
     const d = snap.data();
 
     document.getElementById("schoolName").textContent = d.schoolName;
+
     if (d.headerImage) {
-      document.getElementById("headerImage").style.backgroundImage =
-        `url(${d.headerImage})`;
+      document.getElementById("headerImage").style.backgroundImage = `url(${d.headerImage})`;
     }
   }
 
-  /* ---------------- LOAD ALL ---------------- */
+  /* LOAD ALL */
   loadConfig();
   loadSection("upcomingEvents", "upcomingEvents");
   loadSection("extracurricular", "extracurricular");
   loadSection("trending", "trending");
   loadSection("comingSoon", "comingSoon");
+
 </script>
 
 </body>
