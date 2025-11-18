@@ -1,139 +1,219 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RBS School Hub</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>RBS School Hub</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: "Poppins", Arial, sans-serif;
-      background: #f0f3f9;
-    }
+<style>
+  :root{
+    --bg:#f5f8fd; --card:#fff; --accent1:#0066ff; --accent2:#00c3ff;
+    --muted:#6b7280; --glass: rgba(255,255,255,0.18);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Poppins",sans-serif;
+    background:var(--bg); color:#0f172a; -webkit-font-smoothing:antialiased;
+  }
 
-    /* HEADER */
-    .header {
-      width: 100%;
-      height: 230px;
-      background: linear-gradient(135deg, #0055ff, #00c8ff);
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding-bottom: 28px;
-      border-bottom-left-radius: 20px;
-      border-bottom-right-radius: 20px;
-      position: relative;
-      overflow: hidden;
-    }
+  /* HEADER */
+  .header {
+    position:relative;
+    height:260px;
+    background:linear-gradient(135deg,var(--accent1),var(--accent2));
+    display:flex; align-items:flex-end; justify-content:center;
+    border-bottom-left-radius:20px; border-bottom-right-radius:20px;
+    padding:22px;
+    overflow:hidden;
+  }
+  .header .overlay{position:absolute; inset:0; backdrop-filter:brightness(.7) blur(2px);}
+  .header-inner{
+    z-index:2; width:min(1100px,94%); display:flex; gap:18px; align-items:center;
+  }
+  .brand {
+    color:#fff; font-weight:800; font-size:26px; padding:12px 18px;
+    border-radius:14px; background:rgba(255,255,255,0.12); backdrop-filter:blur(6px);
+    box-shadow:0 6px 20px rgba(0,0,0,0.12);
+  }
+  .subtitle{color:#e6f3ff; margin-top:6px; font-weight:500; opacity:.95}
 
-    .header::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      backdrop-filter: blur(2px) brightness(0.65);
-    }
+  /* SEARCH */
+  .search-wrap{flex:1; display:flex; flex-direction:column; gap:8px;}
+  .search {
+    display:flex; gap:8px; align-items:center;
+    background:rgba(255,255,255,0.12); padding:10px; border-radius:12px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.06);
+  }
+  .search input{
+    flex:1; border:0; outline:none; background:transparent; color:white; font-size:15px;
+  }
+  .search button{border:0; background:#fff; color:var(--accent1); padding:8px 12px; border-radius:10px; font-weight:700; cursor:pointer}
 
-    .school-name {
-      position: relative;
-      font-size: 30px;
-      font-weight: 700;
-      padding: 12px 28px;
-      color: white;
-      background: rgba(255,255,255,0.2);
-      border-radius: 18px;
-      backdrop-filter: blur(10px);
-      box-shadow: 0 0 20px rgba(255,255,255,0.35);
-    }
+  /* LAYOUT */
+  main{max-width:1100px; margin:26px auto; padding:0 18px;}
+  .section-title{display:flex; justify-content:space-between; align-items:center; margin:18px 0 10px}
+  .section-title h2{margin:0; font-size:18px}
+  .section-title .controls{display:flex; gap:10px; align-items:center}
 
-    /* TITLE SECTION */
-    h2 {
-      margin: 28px 20px 12px;
-      font-size: 22px;
-      font-weight: 700;
-      color: #1c1f27;
-    }
+  /* HORIZONTAL SCROLL */
+  .scroll-wrap{position:relative}
+  .scroll-list{
+    display:flex; gap:16px; overflow-x:auto; padding:10px 6px 22px; scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity;
+  }
+  .scroll-list::-webkit-scrollbar{height:8px}
+  .scroll-list::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:8px}
 
-    /* HORIZONTAL SCROLL LIST */
-    .scroll-list {
-      display: flex;
-      gap: 18px;
-      overflow-x: auto;
-      padding: 4px 20px 26px;
-      scroll-snap-type: x proximity;
-    }
-    .scroll-list::-webkit-scrollbar {
-      height: 6px;
-    }
-    .scroll-list::-webkit-scrollbar-thumb {
-      background: #c7cce0;
-      border-radius: 6px;
-    }
+  .card{
+    min-width:220px; max-width:220px; background:var(--card); border-radius:14px; overflow:hidden;
+    box-shadow:0 6px 20px rgba(2,6,23,0.08); transform:translateY(0); transition:transform .22s,box-shadow .22s;
+    scroll-snap-align:start; cursor:pointer; display:flex; flex-direction:column;
+  }
+  .card:hover{transform:translateY(-8px); box-shadow:0 18px 40px rgba(2,6,23,0.14)}
 
-    /* CARD */
-    .card {
-      min-width: 165px;
-      background: white;
-      border-radius: 18px;
-      overflow: hidden;
-      scroll-snap-align: start;
-      box-shadow: 0 5px 16px rgba(0,0,0,0.1);
-      transition: 0.28s ease;
-      transform: translateY(0);
-    }
-    .card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 12px 26px rgba(0,0,0,0.18);
-    }
+  .card-thumb{height:120px; background:#e6eefc; display:block; width:100%; object-fit:cover}
+  .card-body{padding:12px 14px; flex:1; display:flex; flex-direction:column; gap:8px}
+  .card-title{font-weight:700; font-size:15px; color:#0b1220; line-height:1.1}
+  .card-desc{font-size:13px; color:var(--muted); flex:1; margin-top:4px; overflow:hidden; text-overflow:ellipsis}
+  .card-meta{display:flex; gap:8px; align-items:center; margin-top:10px}
+  .chip{padding:6px 8px; background:#eef5ff; color:var(--accent1); border-radius:8px; font-weight:700; font-size:12px}
 
-    .card img {
-      width: 100%;
-      height: 115px;
-      object-fit: cover;
-      background: #ddd;
-    }
+  /* NAV ARROW */
+  .arrow {
+    position:absolute; top:40%; transform:translateY(-50%); background:rgba(255,255,255,0.95);
+    border-radius:999px; width:36px; height:36px; display:grid; place-items:center; box-shadow:0 6px 20px rgba(0,0,0,0.08); cursor:pointer;
+  }
+  .arrow.left{left:6px}
+  .arrow.right{right:6px}
 
-    .tag {
-      font-size: 12px;
-      margin: 10px;
-      padding: 4px 10px;
-      background: linear-gradient(135deg,#dce6ff,#b9ccff);
-      color: #2240c9;
-      border-radius: 8px;
-      display: inline-block;
-      font-weight: 600;
-    }
+  /* MODAL */
+  .modal-backdrop{position:fixed; inset:0; background:rgba(2,6,23,0.5); display:none; align-items:center; justify-content:center; z-index:60}
+  .modal{width:min(820px,94%); background:white; border-radius:12px; overflow:hidden; box-shadow:0 18px 60px rgba(2,6,23,0.4)}
+  .modal .modal-head{display:flex; gap:12px; align-items:center; padding:14px 18px; border-bottom:1px solid #f1f5f9}
+  .modal .modal-body{display:flex; gap:18px; padding:16px}
+  .modal .modal-body img{width:320px; height:200px; object-fit:cover; border-radius:10px}
+  .modal .modal-content{flex:1}
+  .modal .close{margin-left:auto; border:0; background:transparent; font-size:18px; cursor:pointer}
 
-    .content {
-      padding: 10px 12px 12px;
-      font-size: 15px;
-      color: #111;
-      font-weight: 600;
-      line-height: 1.35;
-    }
-  </style>
+  /* RESPONSIVE */
+  @media (max-width:700px){
+    .card{min-width:170px; max-width:170px}
+    .modal .modal-body{flex-direction:column}
+    .modal .modal-body img{width:100%; height:200px}
+  }
+
+  /* small helper */
+  .muted{color:var(--muted); font-size:13px}
+  .btn-ghost{border:1px solid #e6eefc; background:transparent; padding:8px 10px; border-radius:8px; cursor:pointer}
+  .empty{padding:26px; color:var(--muted); text-align:center; background:white; border-radius:12px}
+</style>
 </head>
-
 <body>
 
-<!-- HEADER -->
-<div class="header" id="headerImage">
-  <div class="school-name" id="schoolName">Loading...</div>
-</div>
+  <!-- HEADER -->
+  <header class="header" role="banner" id="header">
+    <div class="overlay"></div>
 
-<h2>Kegiatan Besok</h2>
-<div id="upcomingEvents" class="scroll-list"></div>
+    <div class="header-inner" role="navigation">
+      <div>
+        <div class="brand" id="brandName">RBS School Hub</div>
+        <div class="subtitle" id="subtitle">Portal Informasi & Pengumuman Sekolah</div>
+      </div>
 
-<h2>Ekstrakurikuler</h2>
-<div id="extracurricular" class="scroll-list"></div>
+      <div class="search-wrap" style="margin-left:18px">
+        <div class="search" role="search" aria-label="Cari pengumuman atau kegiatan">
+          <input id="searchInput" placeholder="Cari: contoh 'upacara', 'try out', 'eskul pramuka'..." aria-label="Cari">
+          <button id="searchBtn">Cari</button>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <div class="btn-ghost" id="filterAll">Semua</div>
+          <div class="btn-ghost" id="filterEvent">Kegiatan</div>
+          <div class="btn-ghost" id="filterEskul">Eskul</div>
+        </div>
+      </div>
 
-<h2>Top Trending</h2>
-<div id="trending" class="scroll-list"></div>
+      <div style="margin-left:18px; display:flex;flex-direction:column; gap:8px; align-items:flex-end">
+        <button class="btn-ghost" id="adminBtn">Admin</button>
+        <div class="muted" style="font-size:12px">RBS — Rawa Badak Selatan 11</div>
+      </div>
+    </div>
+  </header>
 
-<h2>Coming Soon</h2>
-<div id="comingSoon" class="scroll-list"></div>
+  <main>
+    <!-- Section Template -->
+    <section id="section-upcoming">
+      <div class="section-title">
+        <h2>📅 Kegiatan Besok</h2>
+        <div class="controls">
+          <div class="muted" id="count-upcoming"></div>
+        </div>
+      </div>
+      <div class="scroll-wrap">
+        <div class="arrow left" data-target="upcomingEvents" role="button" aria-label="Scroll left">‹</div>
+        <div id="upcomingEvents" class="scroll-list" data-section="upcomingEvents"></div>
+        <div class="arrow right" data-target="upcomingEvents" role="button" aria-label="Scroll right">›</div>
+      </div>
+    </section>
 
-<!-- FIREBASE -->
+    <section id="section-eskul">
+      <div class="section-title">
+        <h2>🎭 Ekstrakurikuler</h2>
+        <div class="controls"><div class="muted" id="count-eskul"></div></div>
+      </div>
+      <div class="scroll-wrap">
+        <div class="arrow left" data-target="extracurricular" role="button">‹</div>
+        <div id="extracurricular" class="scroll-list" data-section="extracurricular"></div>
+        <div class="arrow right" data-target="extracurricular" role="button">›</div>
+      </div>
+    </section>
+
+    <section id="section-trending">
+      <div class="section-title">
+        <h2>🔥 Top Trending</h2>
+        <div class="controls"><div class="muted" id="count-trending"></div></div>
+      </div>
+      <div class="scroll-wrap">
+        <div class="arrow left" data-target="trending" role="button">‹</div>
+        <div id="trending" class="scroll-list" data-section="trending"></div>
+        <div class="arrow right" data-target="trending" role="button">›</div>
+      </div>
+    </section>
+
+    <section id="section-coming">
+      <div class="section-title">
+        <h2>⏳ Coming Soon</h2>
+        <div class="controls"><div class="muted" id="count-coming"></div></div>
+      </div>
+      <div class="scroll-wrap">
+        <div class="arrow left" data-target="comingSoon" role="button">‹</div>
+        <div id="comingSoon" class="scroll-list" data-section="comingSoon"></div>
+        <div class="arrow right" data-target="comingSoon" role="button">›</div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-hidden="true">
+    <div class="modal" role="document" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <strong id="modalTitle">Judul</strong>
+        <button class="close" id="modalClose" aria-label="Tutup">✕</button>
+      </div>
+      <div class="modal-body">
+        <img id="modalImg" alt="thumbnail">
+        <div class="modal-content">
+          <div id="modalTag" class="chip"></div>
+          <h3 id="modalTitleFull" style="margin-top:8px"></h3>
+          <p id="modalDesc" class="muted" style="margin-top:8px"></p>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button id="modalAction" class="btn-ghost">Lihat Detail</button>
+            <button id="modalEdit" class="btn-ghost" style="display:none">Edit (Admin)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -147,70 +227,154 @@
     appId: "1:625460145450:web:c75a85e57b37c00bd94253",
     measurementId: "G-ZZTN0NNGZV"
   };
-
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  /* RENDER CARD */
-  function renderCard(item) {
-    const el = document.createElement("div");
-    el.className = "card";
-
-    el.innerHTML = `
-      ${item.image ? `<img src="${item.image}"/>` : `<img src="https://i.imgur.com/Zc7a7W8.png"/>`}
-      ${item.tag ? `<div class="tag">${item.tag}</div>` : ""}
-      <div class="content">${item.title || "Tanpa Judul"}</div>
+  // ---------- simple utilities ----------
+  const sections = ['upcomingEvents','extracurricular','trending','comingSoon'];
+  function el(id){return document.getElementById(id);}
+  function createCard(item){
+    const c = document.createElement('div'); c.className='card';
+    c.tabIndex = 0;
+    c.dataset.raw = JSON.stringify(item);
+    c.innerHTML = `
+      <img class="card-thumb" loading="lazy" src="${item.image||'https://i.imgur.com/Zc7a7W8.png'}" alt="${escapeHtml(item.title||'')}" />
+      <div class="card-body">
+        ${item.tag?`<div class="chip">${escapeHtml(item.tag)}</div>`:''}
+        <div class="card-title">${highlight(item.title||'Tanpa Judul')}</div>
+        <div class="card-desc">${highlight(item.desc||'')}</div>
+        <div class="card-meta"><div class="muted">${item.date?item.date:''}</div></div>
+      </div>
     `;
-
-    return el;
+    c.addEventListener('click', ()=>openModal(item));
+    c.addEventListener('keydown', (e)=>{ if(e.key==='Enter') openModal(item) });
+    return c;
   }
 
-  /* LOAD SECTION */
-  async function loadSection(section, target) {
-    const ref = doc(db, "homepageSections", section);
-    const snap = await getDoc(ref);
-    const el = document.getElementById(target);
-
-    el.innerHTML = "";
-
-    if (!snap.exists()) {
-      el.innerHTML = "<p style='padding:20px;color:#777'>Belum ada data.</p>";
-      return;
-    }
-
-    const data = snap.data();
-    if (!data.items || data.items.length === 0) {
-      el.innerHTML = "<p style='padding:20px;color:#777'>Belum ada data.</p>";
-      return;
-    }
-
-    data.items.forEach(item => el.appendChild(renderCard(item)));
+  function highlight(text){
+    const q = (el('searchInput').value||'').trim();
+    if(!q) return escapeHtml(text);
+    const safe = escapeHtml(text);
+    const re = new RegExp('('+escapeReg(q)+')','ig');
+    return safe.replace(re, '<mark style="background:linear-gradient(90deg,#fff79a,#ffd36b); padding:0 2px;">$1</mark>');
   }
 
-  /* LOAD CONFIG */
-  async function loadConfig() {
-    const ref = doc(db, "config", "homepage");
-    const snap = await getDoc(ref);
+  function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+  function escapeReg(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
 
-    if (!snap.exists()) return;
+  // ---------- modal ----------
+  const modalBackdrop = el('modalBackdrop');
+  function openModal(item){
+    el('modalTitle').textContent = item.title||'Detail';
+    el('modalTitleFull').textContent = item.title||'Tanpa Judul';
+    el('modalDesc').textContent = item.desc||'Tidak ada deskripsi.';
+    el('modalImg').src = item.image||'https://i.imgur.com/Zc7a7W8.png';
+    el('modalTag').textContent = item.tag||'';
+    // show admin edit if admin flag (placeholder)
+    el('modalEdit').style.display = (false)?'inline-block':'none';
+    modalBackdrop.style.display = 'flex';
+    modalBackdrop.setAttribute('aria-hidden','false');
+  }
+  el('modalClose').addEventListener('click', ()=>{ modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); });
 
-    const d = snap.data();
+  // close on backdrop click
+  modalBackdrop.addEventListener('click', (e)=>{ if(e.target === modalBackdrop) { modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); } });
 
-    document.getElementById("schoolName").textContent = d.schoolName;
+  // ---------- load config & sections ----------
+  async function loadConfig(){
+    try{
+      const r = await getDoc(doc(db,'config','homepage'));
+      if(!r.exists()){ el('brandName').textContent='RBS School Hub'; el('subtitle').textContent='Portal Informasi Sekolah'; return; }
+      const d = r.data();
+      el('brandName').textContent = d.schoolName || 'RBS School Hub';
+      el('subtitle').textContent = d.description || 'Portal Informasi Sekolah';
+      if(d.headerImage) document.getElementById('header').style.backgroundImage = `url(${d.headerImage})`;
+    }catch(e){ console.error(e); }
+  }
 
-    if (d.headerImage) {
-      document.getElementById("headerImage").style.backgroundImage = `url(${d.headerImage})`;
+  async function loadSectionData(sectionId){
+    try{
+      const snap = await getDoc(doc(db,'homepageSections',sectionId));
+      if(!snap.exists()) return [];
+      const data = snap.data();
+      return data.items || [];
+    }catch(e){ console.error(e); return []; }
+  }
+
+  async function renderAll(){
+    // load each
+    for(const s of sections){
+      const listEl = el(s);
+      if(!listEl) continue;
+      const items = await loadSectionData(s);
+      listEl.innerHTML = '';
+      if(!items || items.length===0){
+        const empty = document.createElement('div'); empty.className='empty'; empty.textContent='Belum ada data di bagian ini.'; listEl.appendChild(empty); continue;
+      }
+      items.forEach(it => listEl.appendChild(createCard(it)));
+      // count
+      el('count-'+(s==='upcomingEvents'?'upcoming':s==='comingSoon'?'coming':'eskul')).textContent = `${items.length} item`;
     }
   }
 
-  /* LOAD ALL */
+  // initial load
   loadConfig();
-  loadSection("upcomingEvents", "upcomingEvents");
-  loadSection("extracurricular", "extracurricular");
-  loadSection("trending", "trending");
-  loadSection("comingSoon", "comingSoon");
+  renderAll();
+
+  // ---------- search & filter ----------
+  let searchTimer = null;
+  el('searchInput').addEventListener('input', ()=>{ clearTimeout(searchTimer); searchTimer = setTimeout(doSearch, 300); });
+  el('searchBtn').addEventListener('click', doSearch);
+
+  function doSearch(){
+    const q = (el('searchInput').value||'').trim().toLowerCase();
+    // for each section, filter children
+    sections.forEach(s=>{
+      const list = el(s);
+      const cards = Array.from(list.querySelectorAll('.card'));
+      if(cards.length===0) return;
+      cards.forEach(card=>{
+        const raw = JSON.parse(card.dataset.raw||'{}');
+        const hay = ((raw.title||'')+' '+(raw.desc||'')+' '+(raw.tag||'')).toLowerCase();
+        const show = !q || hay.includes(q);
+        card.style.display = show ? '' : 'none';
+      });
+    });
+  }
+
+  // quick filter buttons
+  el('filterEvent').addEventListener('click', ()=>{ el('searchInput').value=''; // show only upcoming
+    sections.forEach(s=>{ const list=el(s); Array.from(list.children).forEach(c=> c.style.display = (s==='upcomingEvents') ? '' : 'none' ); });
+  });
+  el('filterEskul').addEventListener('click', ()=>{ sections.forEach(s=>{ const list=el(s); Array.from(list.children).forEach(c=> c.style.display = (s==='extracurricular') ? '' : 'none' ); }); });
+  el('filterAll').addEventListener('click', ()=>{ sections.forEach(s=>{ const list=el(s); Array.from(list.children).forEach(c=> c.style.display = '' ); }); });
+
+  // arrow scroll handlers (works for each section)
+  document.querySelectorAll('.arrow').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      const target = a.dataset.target;
+      const wrap = document.querySelector(`#${target}`);
+      if(!wrap) return;
+      const dir = a.classList.contains('left') ? -1 : 1;
+      wrap.scrollBy({ left: dir * 260, behavior: 'smooth' });
+    });
+  });
+
+  // enable drag to scroll
+  document.querySelectorAll('.scroll-list').forEach(list=>{
+    let down=false, startX, scrollLeft;
+    list.addEventListener('mousedown', e=>{ down=true; list.classList.add('active'); startX=e.pageX - list.offsetLeft; scrollLeft=list.scrollLeft; });
+    window.addEventListener('mouseup', ()=>{ down=false; list.classList.remove('active'); });
+    list.addEventListener('mousemove', e=>{ if(!down) return; e.preventDefault(); const x=e.pageX - list.offsetLeft; const walk=(x-startX)*1.2; list.scrollLeft=scrollLeft - walk; });
+    // touch
+    let touchStartX=0, touchLeft=0;
+    list.addEventListener('touchstart', e=>{ touchStartX=e.touches[0].pageX; touchLeft=list.scrollLeft; });
+    list.addEventListener('touchmove', e=>{ const dx=e.touches[0].pageX - touchStartX; list.scrollLeft = touchLeft - dx; });
+  });
+
+  // helper to reload after generator runs (admin uses)
+  window.refreshSections = async ()=>{ await loadConfig(); await renderAll(); };
 
 </script>
-
 </body>
 </html>
