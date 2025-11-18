@@ -2,22 +2,21 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>RBS School Hub</title>
 
 <style>
   body {
     margin: 0;
-    font-family: "Poppins", sans-serif;
+    font-family: "Poppins", Arial, sans-serif;
     background: #eef2f7;
-    color: #222;
   }
 
   /* HEADER */
   .header {
     width: 100%;
     height: 230px;
-    background: linear-gradient(135deg, #0055ff, #00c8ff);
+    background: linear-gradient(135deg, #0059ff, #00d0ff);
     display: flex;
     align-items: flex-end;
     justify-content: center;
@@ -26,109 +25,102 @@
     border-bottom-right-radius: 22px;
     position: relative;
     overflow: hidden;
-    color: white;
   }
-
   .header::after {
     content: "";
     position: absolute;
     inset: 0;
-    backdrop-filter: blur(3px) brightness(0.65);
+    backdrop-filter: blur(2px) brightness(0.65);
   }
-
-  .header-name {
+  .school-name {
     position: relative;
-    padding: 10px 26px;
     font-size: 30px;
     font-weight: 700;
+    padding: 12px 28px;
+    color: white;
     background: rgba(255,255,255,0.2);
-    border-radius: 16px;
+    border-radius: 18px;
     backdrop-filter: blur(10px);
-    box-shadow: 0 0 12px rgba(255,255,255,0.3);
+    box-shadow: 0 0 20px rgba(255,255,255,0.35);
   }
 
-  /* SECTION TITLE */
+  /* TITLES */
   h2 {
-    margin: 28px 20px 10px;
+    margin: 26px 20px 12px;
     font-size: 22px;
     font-weight: 700;
+    color: #1c1f27;
   }
 
   /* SCROLL LIST */
-  .scroll {
+  .scroll-list {
     display: flex;
     gap: 18px;
     overflow-x: auto;
-    padding: 2px 20px 26px;
-    scroll-snap-type: x proximity;
+    padding: 4px 20px 26px;
   }
-  .scroll::-webkit-scrollbar {
+  .scroll-list::-webkit-scrollbar {
     height: 6px;
   }
-  .scroll::-webkit-scrollbar-thumb {
-    background: #cbd3e7;
+  .scroll-list::-webkit-scrollbar-thumb {
+    background: #c7cce0;
     border-radius: 6px;
   }
 
   /* CARD */
   .card {
-    min-width: 165px;
+    min-width: 160px;
     background: white;
     border-radius: 18px;
     overflow: hidden;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
-    transition: 0.25s ease;
+    box-shadow: 0 5px 16px rgba(0,0,0,0.1);
+    transition: 0.28s ease;
     cursor: pointer;
   }
   .card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    transform: translateY(-10px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.18);
   }
-
   .card img {
     width: 100%;
-    height: 120px;
+    height: 115px;
     object-fit: cover;
-    background: #ddd;
   }
-
   .tag {
-    margin: 10px;
-    display: inline-block;
-    padding: 4px 10px;
     font-size: 12px;
-    background: #dfe7ff;
-    color: #2142d8;
+    margin: 10px;
+    padding: 4px 10px;
+    background: linear-gradient(135deg,#dce6ff,#b9ccff);
+    color: #2240c9;
     border-radius: 8px;
     font-weight: 600;
+    display: inline-block;
   }
-
-  .card-title {
-    padding: 10px 12px 16px;
+  .content {
+    padding: 10px 12px 14px;
     font-size: 15px;
     font-weight: 600;
-    line-height: 1.35;
+    color: #111;
   }
 
   /* MODAL */
   .modal-bg {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0,0,0,0.55);
     display: none;
     justify-content: center;
     align-items: center;
-    padding: 20px;
   }
 
-  .modal {
-    width: 92%;
+  .modal-box {
+    width: 85%;
     max-width: 420px;
     background: white;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 10px 28px rgba(0,0,0,0.22);
-    animation: pop 0.22s ease;
+    padding: 22px;
+    border-radius: 16px;
+    text-align: center;
+    animation: pop 0.25s ease;
   }
 
   @keyframes pop {
@@ -136,74 +128,58 @@
     to { transform: scale(1); opacity: 1; }
   }
 
-  .modal img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-  }
-
-  .modal-content {
-    padding: 18px 20px 26px;
-  }
-
-  .modal-title {
+  .modal-box h3 {
+    margin: 0 0 8px;
     font-size: 20px;
     font-weight: 700;
   }
 
-  .modal-desc {
-    margin-top: 10px;
+  .modal-box p {
+    margin: 0;
+    font-size: 15px;
     color: #444;
-    line-height: 1.45;
   }
 
-  .close {
-    margin-top: 20px;
-    padding: 10px 14px;
-    background: #005bff;
+  .close-btn {
+    margin-top: 16px;
+    background: #005cff;
     color: white;
-    width: 100%;
-    border-radius: 12px;
-    font-size: 15px;
     border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 15px;
     cursor: pointer;
   }
-
 </style>
 </head>
+
 <body>
 
 <!-- HEADER -->
 <div class="header" id="headerImage">
-  <div class="header-name" id="schoolName">Loading...</div>
+  <div class="school-name" id="schoolName">Loading...</div>
 </div>
 
-<!-- SECTIONS -->
 <h2>Kegiatan Besok</h2>
-<div class="scroll" id="upcomingEvents"></div>
+<div id="upcomingEvents" class="scroll-list"></div>
 
 <h2>Ekstrakurikuler</h2>
-<div class="scroll" id="extracurricular"></div>
+<div id="extracurricular" class="scroll-list"></div>
 
 <h2>Top Trending</h2>
-<div class="scroll" id="trending"></div>
+<div id="trending" class="scroll-list"></div>
 
-<h2>Coming Soon</h2>
-<div class="scroll" id="comingSoon"></div>
-
+<h2>🔥 Ghibah Khusus</h2>
+<div id="ghibahSection" class="scroll-list"></div>
 
 <!-- MODAL -->
 <div class="modal-bg" id="modalBg">
-  <div class="modal" id="modalBox">
-    <img id="modalImg" src="">
-    <div class="modal-content">
-      <div class="modal-title" id="modalTitle"></div>
-      <div class="modal-desc" id="modalDesc"></div>
-      <button class="close" onclick="closeModal()">Tutup</button>
-    </div>
+  <div class="modal-box">
+    <h3 id="modalTitle">Title</h3>
+    <p id="modalTag">Tag</p>
+    <button class="close-btn" id="modalClose">Tutup</button>
   </div>
 </div>
-
 
 <!-- FIREBASE -->
 <script type="module">
@@ -223,74 +199,64 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
+  /* MODAL HANDLER */
+  function openModal(title, tag) {
+    modalBg.style.display = "flex";
+    modalTitle.textContent = title;
+    modalTag.textContent = tag ? "Kategori: " + tag : "Tidak ada kategori.";
+  }
+  modalClose.onclick = () => modalBg.style.display = "none";
+  modalBg.onclick = e => { if (e.target === modalBg) modalBg.style.display = "none"; };
+
   /* RENDER CARD */
   function renderCard(item) {
     const el = document.createElement("div");
     el.className = "card";
 
     el.innerHTML = `
-      <img src="${item.image || 'https://i.imgur.com/Zc7a7W8.png'}">
+      <img src="${item.image || "https://i.imgur.com/Zc7a7W8.png"}"/>
       ${item.tag ? `<div class="tag">${item.tag}</div>` : ""}
-      <div class="card-title">${item.title}</div>
+      <div class="content">${item.title || "Tanpa Judul"}</div>
     `;
 
-    el.onclick = () => openModal(item);
-
+    el.onclick = () => openModal(item.title, item.tag);
     return el;
   }
 
-  /* LOAD SECTIONS */
-  async function loadSection(id, target) {
-    const ref = doc(db, "homepageSections", id);
+  /* LOAD SECTION */
+  async function loadSection(section, targetId) {
+    const ref = doc(db, "homepageSections", section);
     const snap = await getDoc(ref);
-    const el = document.getElementById(target);
+    const el = document.getElementById(targetId);
 
     el.innerHTML = "";
 
-    if (!snap.exists()) {
-      el.innerHTML = "<p style='padding:20px;color:#777'>Belum ada data.</p>";
-      return;
-    }
+    if (!snap.exists()) return;
 
-    snap.data().items.forEach(item => {
-      el.appendChild(renderCard(item));
-    });
+    const data = snap.data();
+    if (!data.items) return;
+
+    data.items.forEach(item => el.appendChild(renderCard(item)));
   }
 
   /* LOAD CONFIG */
   async function loadConfig() {
     const ref = doc(db, "config", "homepage");
     const snap = await getDoc(ref);
-
     if (!snap.exists()) return;
+
     const d = snap.data();
 
-    document.getElementById("schoolName").textContent = d.schoolName;
-
-    if (d.headerImage) {
-      document.getElementById("headerImage").style.backgroundImage = `url(${d.headerImage})`;
-    }
+    schoolName.textContent = d.schoolName;
+    if (d.headerImage) headerImage.style.backgroundImage = `url(${d.headerImage})`;
   }
-
-  /* MODAL */
-  window.openModal = (item) => {
-    document.getElementById("modalImg").src = item.image || "";
-    document.getElementById("modalTitle").textContent = item.title || "";
-    document.getElementById("modalDesc").textContent = item.description || "Tidak ada deskripsi.";
-    document.getElementById("modalBg").style.display = "flex";
-  };
-
-  window.closeModal = () => {
-    document.getElementById("modalBg").style.display = "none";
-  };
 
   /* LOAD ALL */
   loadConfig();
   loadSection("upcomingEvents", "upcomingEvents");
   loadSection("extracurricular", "extracurricular");
   loadSection("trending", "trending");
-  loadSection("comingSoon", "comingSoon");
-
+  loadSection("ghibah", "ghibahSection"); // ⬅ GHIBAH DIPISAH DI PALING BAWAH
 </script>
 
 </body>
