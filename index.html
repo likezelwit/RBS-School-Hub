@@ -1,69 +1,102 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RBS School Hub — Setup</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RBS School Hub</title>
+
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
       margin: 0;
-      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #f2f4f7;
     }
-    .container {
-      max-width: 600px;
-      margin: 30px auto;
-      background: #fff;
-      padding: 22px;
-      border-radius: 12px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-    }
-    h2 { text-align: center; margin-bottom: 10px; }
-    p.sub { text-align:center; color:#555; margin-bottom:18px; }
-    button {
+
+    /* HEADER SEKOLAH */
+    .header {
       width: 100%;
-      padding: 14px;
-      margin-top: 12px;
-      border: none;
-      border-radius: 10px;
-      background: #007bff;
+      height: 180px;
+      background-size: cover;
+      background-position: center;
+      background-color: #ccc;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      padding-bottom:20px;
+    }
+
+    .school-name {
+      font-size: 26px;
+      padding: 10px 18px;
+      background: rgba(0,0,0,0.5);
       color: white;
-      font-size: 16px;
-      cursor: pointer;
-      transition: .18s;
-    }
-    button.secondary {
-      background: #28a745;
-    }
-    button:active { transform: translateY(1px); }
-    #msg {
-      margin-top: 16px;
-      padding: 10px;
       border-radius: 8px;
-      display:none;
+      backdrop-filter: blur(3px);
     }
-    #msg.success { background:#e6ffed; color:#007a3d; display:block; }
-    #msg.error { background:#ffe6e6; color:#b30000; display:block; }
+
+    /* SECTION TITLE */
+    h2 {
+      margin: 18px 14px 10px;
+      font-size: 20px;
+    }
+
+    /* HORIZONTAL SCROLL LIST */
+    .scroll-list {
+      display: flex;
+      overflow-x: auto;
+      gap: 12px;
+      padding: 0 12px 12px;
+    }
+
+    /* CARD */
+    .card {
+      min-width: 150px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .card img {
+      width: 100%;
+      height: 90px;
+      object-fit: cover;
+    }
+
+    .card .content {
+      padding: 10px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>RBS School Hub — Generator</h2>
-    <p class="sub">Klik tombol untuk membuat collection default di Firestore. Hati-hati: butuh akses ke project Firebase yang sesuai.</p>
 
-    <button id="btn-generate-web">Generate WEB Collections</button>
-    <button id="btn-generate-ghibah" class="secondary">Generate GHIBAH Chat Collections</button>
-
-    <div id="msg"></div>
+  <!-- HEADER (ambil dari Firestore) -->
+  <div class="header" id="headerImage">
+    <div class="school-name" id="schoolName">Loading...</div>
   </div>
 
-  <!-- Firebase (ESM) + module logic -->
+  <h2>Kegiatan Besok</h2>
+  <div id="upcomingEvents" class="scroll-list"></div>
+
+  <h2>Ekstrakurikuler</h2>
+  <div id="extracurricular" class="scroll-list"></div>
+
+  <h2>Top Trending</h2>
+  <div id="trending" class="scroll-list"></div>
+
+  <h2>Coming Soon</h2>
+  <div id="comingSoon" class="scroll-list"></div>
+
+
+  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, collection, getDocs } 
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // ---------- CONFIG ----------
     const firebaseConfig = {
       apiKey: "AIzaSyAsaVfy4SOegY1HxUZTJoR2HETUenU8CUo",
       authDomain: "rbs-schoolhub.firebaseapp.com",
@@ -77,96 +110,64 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // ---------- UI helpers ----------
-    const msgEl = document.getElementById('msg');
-    function showSuccess(text) {
-      msgEl.className = 'success';
-      msgEl.textContent = text;
-      msgEl.style.display = 'block';
-    }
-    function showError(text) {
-      msgEl.className = 'error';
-      msgEl.textContent = text;
-      msgEl.style.display = 'block';
-    }
+    // Load CONFIG header + school name
+    async function loadConfig() {
+      const confRef = doc(db, "config", "homepage");
+      const confSnap = await getDoc(confRef);
 
-    // ---------- Generator functions ----------
-    async function generateWebCollections() {
-      try {
-        // safety: check if config/homepage already exists to avoid overwrite
-        const confRef = doc(db, "config", "homepage");
-        const confSnap = await getDoc(confRef);
-        if (confSnap.exists()) {
-          showSuccess("WEB Collections sudah ada — operasi dihentikan (tidak overwrite).");
-          return;
-        }
+      if (!confSnap.exists()) return;
 
-        // create default documents
-        await setDoc(confRef, {
-          schoolName: "RBS School Hub",
-          headerImage: "",
-          createdAt: Date.now(),
-          lastUpdate: Date.now()
-        });
+      const data = confSnap.data();
 
-        await setDoc(doc(db, "homepageSections", "upcomingEvents"), {
-          enabled: true,
-          items: []
-        });
+      document.getElementById("schoolName").textContent = data.schoolName;
 
-        await setDoc(doc(db, "homepageSections", "extracurricular"), {
-          enabled: true,
-          items: []
-        });
-
-        await setDoc(doc(db, "homepageSections", "trending"), {
-          enabled: true,
-          items: []
-        });
-
-        await setDoc(doc(db, "homepageSections", "comingSoon"), {
-          enabled: true,
-          items: []
-        });
-
-        showSuccess("WEB Collections berhasil dibuat!");
-      } catch (err) {
-        console.error(err);
-        showError("Gagal membuat WEB Collections. Cek console untuk detail.");
+      if (data.headerImage && data.headerImage.length > 5) {
+        document.getElementById("headerImage").style.backgroundImage =
+          `url(${data.headerImage})`;
       }
     }
 
-    async function generateGhibahCollections() {
-      try {
-        const roomRef = doc(db, "chatRooms", "ghibah");
-        const roomSnap = await getDoc(roomRef);
-        if (roomSnap.exists()) {
-          showSuccess("GHIBAH Chat Room sudah ada — operasi dihentikan (tidak overwrite).");
-          return;
-        }
+    // Render card helper
+    function renderCard(item) {
+      const card = document.createElement("div");
+      card.className = "card";
 
-        await setDoc(roomRef, {
-          name: "Ghibah Group 🔥",
-          passwordEnabled: false,
-          allowAnonymous: true,
-          createdAt: Date.now()
-        });
+      card.innerHTML = `
+        ${item.image ? `<img src="${item.image}" />` : ""}
+        <div class="content">${item.title || "Untitled"}</div>
+      `;
 
-        showSuccess("GHIBAH Chat Room berhasil dibuat!");
-      } catch (err) {
-        console.error(err);
-        showError("Gagal membuat GHIBAH Chat Room. Cek console untuk detail.");
-      }
+      card.onclick = () => alert("Detail: " + item.title);
+
+      return card;
     }
 
-    // ---------- Attach listeners (fix for module scope) ----------
-    document.getElementById('btn-generate-web').addEventListener('click', generateWebCollections);
-    document.getElementById('btn-generate-ghibah').addEventListener('click', generateGhibahCollections);
+    // Load section items
+    async function loadSection(sectionId, htmlId) {
+      const secRef = doc(db, "homepageSections", sectionId);
+      const secSnap = await getDoc(secRef);
 
-    // Optional: expose to window if you still want inline calls elsewhere
-    window.generateWebCollections = generateWebCollections;
-    window.generateGhibahCollections = generateGhibahCollections;
+      if (!secSnap.exists()) return;
 
+      const data = secSnap.data();
+      const list = document.getElementById(htmlId);
+
+      if (!data.items) return;
+
+      list.innerHTML = ""; // bersihin
+
+      data.items.forEach(item => {
+        list.appendChild(renderCard(item));
+      });
+    }
+
+    // Load semuanya
+    loadConfig();
+    loadSection("upcomingEvents", "upcomingEvents");
+    loadSection("extracurricular", "extracurricular");
+    loadSection("trending", "trending");
+    loadSection("comingSoon", "comingSoon");
   </script>
+
 </body>
 </html>
