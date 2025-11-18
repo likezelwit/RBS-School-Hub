@@ -3,246 +3,220 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RBS School Hub — Generator</title>
+  <title>RBS School Hub</title>
 
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #eef2f7;
       margin: 0;
-      padding: 20px;
+      font-family: "Poppins", Arial, sans-serif;
+      background: #eef1f6;
     }
-    .container {
-      max-width: 650px;
-      margin: 30px auto;
-      background: #fff;
-      padding: 25px;
-      border-radius: 14px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.07);
-    }
-    h2 { text-align: center; margin-bottom: 5px; }
-    p.sub { text-align:center; color:#666; margin-bottom:25px; }
 
-    button {
+    /* HEADER */
+    .header {
       width: 100%;
-      padding: 15px;
-      margin-top: 12px;
-      border: none;
-      border-radius: 10px;
-      background: #007bff;
+      height: 210px;
+      background: linear-gradient(135deg, #0066ff, #00c3ff);
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 25px;
+      position: relative;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      box-shadow: 0 4px 25px rgba(0,0,0,0.15);
+    }
+
+    .header::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      backdrop-filter: brightness(0.65);
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+    }
+
+    .school-name {
+      position: relative;
+      z-index: 5;
+      font-size: 28px;
+      font-weight: 600;
+      padding: 10px 22px;
+      background: rgba(255,255,255,0.25);
       color: white;
-      font-size: 16px;
+      border-radius: 14px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 0 15px rgba(255,255,255,0.35);
+    }
+
+    /* TITLE */
+    h2 {
+      margin: 22px 16px 10px;
+      font-size: 21px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    /* LIST */
+    .scroll-list {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding: 0 16px 22px;
+    }
+    .scroll-list::-webkit-scrollbar {
+      height: 6px;
+    }
+    .scroll-list::-webkit-scrollbar-thumb {
+      background: #c8cdd9;
+      border-radius: 5px;
+    }
+
+    /* CARD */
+    .card {
+      min-width: 160px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+      overflow: hidden;
       cursor: pointer;
-      transition: .15s;
-      font-weight: bold;
+      transition: 0.25s;
     }
-    button.secondary { background: #28a745; }
-    button.danger { background: #ff5722; }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.15);
+    }
 
-    button:hover {
-      opacity: .9;
+    .card img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
     }
-    button:active { transform: translateY(1px); }
 
-    #msg {
-      margin-top: 18px;
-      padding: 12px;
-      border-radius: 8px;
-      display:none;
-      font-weight: bold;
+    .card .content {
+      padding: 10px;
+      font-size: 14px;
+      color: #222;
+      font-weight: 500;
     }
-    #msg.success { background:#e6ffed; color:#007a3d; display:block; }
-    #msg.error { background:#ffe6e6; color:#b30000; display:block; }
+
+    .card .tag {
+      font-size: 12px;
+      margin: 6px 10px 0;
+      display: inline-block;
+      padding: 4px 8px;
+      background: #e8efff;
+      color: #1b4ddf;
+      border-radius: 6px;
+    }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <h2>RBS School Hub — Generator</h2>
-    <p class="sub">Klik tombol untuk membuat seluruh koleksi Firestore secara otomatis.</p>
 
-    <button id="btn-generate-web">Generate WEB Collections Lengkap</button>
-    <button id="btn-generate-chat" class="secondary">Generate Chat Rooms (Public + Private + Ghibah)</button>
-    <button id="btn-generate-admin" class="danger">Generate Admin Config</button>
+<!-- HEADER -->
+<div class="header" id="headerImage">
+  <div class="school-name" id="schoolName">Loading...</div>
+</div>
 
-    <div id="msg"></div>
-  </div>
+<h2>Kegiatan Besok</h2>
+<div id="upcomingEvents" class="scroll-list"></div>
 
-  <!-- ================= FIREBASE SCRIPT ================= -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<h2>Ekstrakurikuler</h2>
+<div id="extracurricular" class="scroll-list"></div>
 
-    // ---------- CONFIG ----------
-    const firebaseConfig = {
-      apiKey: "AIzaSyAsaVfy4SOegY1HxUZTJoR2HETUenU8CUo",
-      authDomain: "rbs-schoolhub.firebaseapp.com",
-      projectId: "rbs-schoolhub",
-      storageBucket: "rbs-schoolhub.firebasestorage.app",
-      messagingSenderId: "625460145450",
-      appId: "1:625460145450:web:c75a85e57b37c00bd94253",
-      measurementId: "G-ZZTN0NNGZV"
-    };
+<h2>Top Trending</h2>
+<div id="trending" class="scroll-list"></div>
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+<h2>Coming Soon</h2>
+<div id="comingSoon" class="scroll-list"></div>
 
-    // ---------- UI helpers ----------
-    const msgEl = document.getElementById('msg');
-    function showSuccess(text) {
-      msgEl.className = 'success';
-      msgEl.textContent = text;
-      msgEl.style.display = 'block';
-    }
-    function showError(text) {
-      msgEl.className = 'error';
-      msgEl.textContent = text;
-      msgEl.style.display = 'block';
-    }
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // ============================================================
-    // 1. GENERATE WEB COLLECTIONS
-    // ============================================================
-    async function generateWebCollections() {
-      try {
-        // homepage config
-        const confRef = doc(db, "config", "homepage");
-        if (!(await getDoc(confRef)).exists()) {
-          await setDoc(confRef, {
-            schoolName: "RBS School Hub",
-            headerImage: "",
-            themeColor: "#007bff",
-            description: "Sistem informasi sekolah RBS",
-            createdAt: Date.now(),
-            lastUpdate: Date.now()
-          });
-        }
+  const firebaseConfig = {
+    apiKey: "AIzaSyAsaVfy4SOegY1HxUZTJoR2HETUenU8CUo",
+    authDomain: "rbs-schoolhub.firebaseapp.com",
+    projectId: "rbs-schoolhub",
+    storageBucket: "rbs-schoolhub.firebasestorage.app",
+    messagingSenderId: "625460145450",
+    appId: "1:625460145450:web:c75a85e57b37c00bd94253",
+    measurementId: "G-ZZTN0NNGZV"
+  };
 
-        // default layout sections
-        const sections = ["upcomingEvents", "extracurricular", "trending", "comingSoon"];
-        for (const s of sections) {
-          const ref = doc(db, "homepageSections", s);
-          if (!(await getDoc(ref)).exists()) {
-            await setDoc(ref, { enabled: true, items: [] });
-          }
-        }
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-        // sample data
-        await setDoc(doc(db, "homepageSections", "extracurricular-sample"), {
-          enabled: true,
-          items: [
-            { title: "Basket", desc: "Latihan Sabtu", image: "" },
-            { title: "Volly", desc: "Tim aktif", image: "" },
-            { title: "Pramuka", desc: "Outdoor survival", image: "" }
-          ]
-        });
+  /* ----------------- RENDER CARD ----------------- */
+  function renderCard(item) {
+    const el = document.createElement("div");
+    el.className = "card";
 
-        await setDoc(doc(db, "homepageSections", "upcomingEvents-sample"), {
-          enabled: true,
-          items: [
-            { date: "2025-11-28", title: "Ujian Tengah Semester", desc: "1 minggu" },
-            { date: "2025-12-15", title: "Class Meeting", desc: "Turnamen sekolah" }
-          ]
-        });
+    el.innerHTML = `
+      ${item.image ? `<img src="${item.image}">` : ""}
+      ${item.tag ? `<div class="tag">${item.tag}</div>` : ""}
+      <div class="content">${item.title}</div>
+    `;
 
-        await setDoc(doc(db, "homepageSections", "trending-sample"), {
-          enabled: true,
-          items: [
-            { title: "Juara FLS2N", desc: "Menang lomba musik" },
-            { title: "Project Website", desc: "Situs baru siswa RBS" }
-          ]
-        });
+    el.onclick = () => alert("Detail: " + item.title);
 
-        await setDoc(doc(db, "homepageSections", "comingSoon-sample"), {
-          enabled: true,
-          items: [
-            { title: "Perpustakaan Digital", desc: "Rilis Jan 2026" }
-          ]
-        });
+    return el;
+  }
 
-        showSuccess("WEB Collections + sample berhasil dibuat!");
-      } catch (err) {
-        console.error(err);
-        showError("Gagal generate Web Collections.");
-      }
+  /* ----------- LOAD SECTION FROM FIREBASE ---------- */
+  async function loadSection(section, target) {
+    const ref = doc(db, "homepageSections", section);
+    const snap = await getDoc(ref);
+
+    const el = document.getElementById(target);
+    el.innerHTML = "";
+
+    if (!snap.exists()) {
+      // fallback example
+      const dummy = [{
+        title: "Belum ada data",
+        image: "https://i.imgur.com/89dJrSg.png",
+        tag: "Example"
+      }];
+      dummy.forEach(d => el.appendChild(renderCard(d)));
+      return;
     }
 
-    // ============================================================
-    // 2. GENERATE CHAT ROOMS (PUBLIC, PRIVATE, GHIBAH)
-    // ============================================================
-    async function generateChatRooms() {
-      try {
-        // Public room
-        const pub = doc(db, "chatRooms", "public");
-        if (!(await getDoc(pub)).exists()) {
-          await setDoc(pub, {
-            name: "Public Lobby 💬",
-            passwordEnabled: false,
-            allowAnonymous: true,
-            createdAt: Date.now()
-          });
-        }
+    const data = snap.data();
+    if (!data.items) return;
 
-        // Private room + password
-        const priv = doc(db, "chatRooms", "privateRoom");
-        if (!(await getDoc(priv)).exists()) {
-          await setDoc(priv, {
-            name: "Private Room 🔒",
-            passwordEnabled: true,
-            password: "12345",
-            allowAnonymous: false,
-            createdAt: Date.now()
-          });
-        }
+    data.items.forEach(item => el.appendChild(renderCard(item)));
+  }
 
-        // GHIBAH room
-        const ghibah = doc(db, "chatRooms", "ghibah");
-        if (!(await getDoc(ghibah)).exists()) {
-          await setDoc(ghibah, {
-            name: "Ghibah Room 🔥",
-            passwordEnabled: false,
-            allowAnonymous: true,
-            createdAt: Date.now()
-          });
-        }
+  /* ----------- LOAD HEADER / CONFIG ---------- */
+  async function loadConfig() {
+    const ref = doc(db, "config", "homepage");
+    const snap = await getDoc(ref);
 
-        showSuccess("Semua Chat Rooms berhasil dibuat!");
-      } catch (err) {
-        console.error(err);
-        showError("Gagal generate Chat Rooms.");
-      }
+    if (!snap.exists()) {
+      document.getElementById("schoolName").textContent = "RBS School Hub";
+      return;
     }
 
-    // ============================================================
-    // 3. GENERATE ADMIN CONFIG
-    // ============================================================
-    async function generateAdminConfig() {
-      try {
-        const adminRef = doc(db, "config", "admin");
+    const d = snap.data();
 
-        if (!(await getDoc(adminRef)).exists()) {
-          await setDoc(adminRef, {
-            enabled: true,
-            adminKey: "RBS-2025-SECRET-KEY",
-            maintenanceMode: false,
-            createdAt: Date.now()
-          });
-        }
-
-        showSuccess("Admin config berhasil dibuat!");
-      } 
-      catch (err) {
-        console.error(err);
-        showError("Gagal membuat admin config.");
-      }
+    document.getElementById("schoolName").textContent = d.schoolName;
+    if (d.headerImage) {
+      document.getElementById("headerImage").style.backgroundImage =
+        `url(${d.headerImage})`;
     }
+  }
 
-    // ============================================================
-    // LISTENER BUTTON
-    // ============================================================
-    document.getElementById('btn-generate-web').addEventListener('click', generateWebCollections);
-    document.getElementById('btn-generate-chat').addEventListener('click', generateChatRooms);
-    document.getElementById('btn-generate-admin').addEventListener('click', generateAdminConfig);
+  /* ---------------- LOAD ALL ---------------- */
+  loadConfig();
+  loadSection("upcomingEvents", "upcomingEvents");
+  loadSection("extracurricular", "extracurricular");
+  loadSection("trending", "trending");
+  loadSection("comingSoon", "comingSoon");
+</script>
 
-  </script>
 </body>
 </html>
