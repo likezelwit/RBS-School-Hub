@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RBS School Hub</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      background: #f3f6fa;
+      color: #222;
+    }
+
+    header {
+      width: 100%;
+      padding: 20px 40px;
+      background: #1d4ed8;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    nav a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: white;
+      font-size: 15px;
+      opacity: 0.9;
+    }
+
+    nav a:hover {
+      opacity: 1;
+    }
+
+    .hero {
+      padding: 80px 40px;
+      text-align: center;
+      background: #ffffff;
+      border-bottom: 1px solid #dbe1ea;
+    }
+
+    .hero h2 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #1e3a8a;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    .btn-primary {
+      padding: 12px 28px;
+      font-size: 16px;
+      background: #1d4ed8;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .section {
+      padding: 60px 40px;
+    }
+
+    .section h3 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: #1e3a8a;
+      font-weight: 600;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid #dbe1ea;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    footer {
+      padding: 20px;
+      background: #1d4ed8;
+      color: white;
+      text-align: center;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>RBS School Hub</h1>
+    <nav>
+      <a href="#pengumuman">Pengumuman</a>
+      <a href="#agenda">Agenda</a>
+      <a href="#dokumen">Dokumen</a>
+      <a href="#tentang">Tentang</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>Portal Informasi Resmi Sekolah</h2>
+    <p>Tempat untuk melihat pengumuman, agenda, dokumen, dan informasi penting RBS.</p>
+    <button class="btn-primary">Lihat Pengumuman</button>
+  </section>
+
+  <section class="section" id="pengumuman">
+    <h3>Pengumuman Terbaru</h3>
+    <div class="grid">
+      <div class="card">
+        <h4>Libur Semester</h4>
+        <p>Sekolah akan libur mulai tanggal 20 Desember hingga 4 Januari.</p>
+      </div>
+
+      <div class="card">
+        <h4>Gladi Bersih Upacara</h4>
+        <p>Seluruh peserta diwajibkan hadir hari Jumat pukul 07.00.</p>
+      </div>
+
+      <div class="card">
+        <h4>Pengambilan Raport</h4>
+        <p>Raport dapat diambil pada tanggal 18 Desember oleh orang tua/wali.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="agenda">
+    <h3>Agenda Kegiatan</h3>
+    <div class="grid">
+      <div class="card">
+        <h4>Class Meeting</h4>
+        <p>10 - 14 Januari 2025</p>
+      </div>
+      <div class="card">
+        <h4>Pentas Seni</h4>
+        <p>25 Februari 2025</p>
+      </div>
+      <div class="card">
+        <h4>Try Out</h4>
+        <p>5 - 8 Maret 2025</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="dokumen">
+    <h3>Dokumen Sekolah</h3>
+    <div class="grid">
+      <div class="card"><p>• Surat Izin Orang Tua</p></div>
+      <div class="card"><p>• Jadwal Pelajaran</p></div>
+      <div class="card"><p>• Daftar Ekstrakurikuler</p></div>
+    </div>
+  </section>
+
+  <footer>
+    © 2025 RBS School Hub — Semua Hak Dilindungi
+  </footer>
+
+</body>
+</html>
